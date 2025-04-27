@@ -1,9 +1,8 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Plus, Link, Trash2 } from 'lucide-react';
+import { Plus, Link, RefreshCw } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -17,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 interface LinkManagerProps {
   productId: string;
   currentLink: string;
-  onUpdateLink: (newLink: string) => void;
+  onUpdateLink: (newLink: string, extractedPrice?: number) => void;
 }
 
 const LinkManager: React.FC<LinkManagerProps> = ({
@@ -26,10 +25,43 @@ const LinkManager: React.FC<LinkManagerProps> = ({
   onUpdateLink
 }) => {
   const { toast } = useToast();
-  const [newLink, setNewLink] = React.useState('');
-  const [linkHistory, setLinkHistory] = React.useState<{ url: string; timestamp: string }[]>([]);
+  const [newLink, setNewLink] = useState('');
+  const [linkHistory, setLinkHistory] = useState<{ url: string; timestamp: string }[]>([]);
+  const [isExtracting, setIsExtracting] = useState(false);
 
-  const handleAddLink = () => {
+  const extractPriceFromMetadata = async (url: string) => {
+    setIsExtracting(true);
+    try {
+      // Basic price pattern matching from HTML content
+      const response = await fetch(url);
+      const text = await response.text();
+      
+      // Look for common price patterns in the HTML
+      const pricePatterns = [
+        /\$\s*([0-9]+(?:\.[0-9]{2})?)/,  // $XX.XX
+        /price["\s:]+([0-9]+(?:\.[0-9]{2})?)/i,  // price: XX.XX
+        /amount["\s:]+([0-9]+(?:\.[0-9]{2})?)/i   // amount: XX.XX
+      ];
+
+      for (const pattern of pricePatterns) {
+        const match = text.match(pattern);
+        if (match && match[1]) {
+          const price = parseFloat(match[1]);
+          if (!isNaN(price)) {
+            return price;
+          }
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error extracting price:', error);
+      return null;
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleAddLink = async () => {
     if (!newLink) {
       toast({
         title: "Error",
@@ -41,7 +73,11 @@ const LinkManager: React.FC<LinkManagerProps> = ({
 
     try {
       new URL(newLink); // Validate URL format
-      onUpdateLink(newLink);
+      
+      // Try to extract price
+      const extractedPrice = await extractPriceFromMetadata(newLink);
+      
+      onUpdateLink(newLink, extractedPrice || undefined);
       setLinkHistory([
         { url: newLink, timestamp: new Date().toISOString() },
         ...linkHistory
@@ -50,9 +86,11 @@ const LinkManager: React.FC<LinkManagerProps> = ({
       
       toast({
         title: "Success",
-        description: "Purchase link updated successfully",
+        description: extractedPrice 
+          ? `Purchase link updated with extracted price: $${extractedPrice}` 
+          : "Purchase link updated successfully",
       });
-    } catch {
+    } catch (error) {
       toast({
         title: "Error",
         description: "Please enter a valid URL",

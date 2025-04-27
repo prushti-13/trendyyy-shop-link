@@ -67,8 +67,15 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({
     });
   };
 
-  const handlePurchaseLinkUpdate = (newLink: string) => {
+  const handlePurchaseLinkUpdate = (newLink: string, extractedPrice?: number) => {
     setPurchaseLink(newLink);
+    if (extractedPrice) {
+      setPrice(extractedPrice.toString());
+      toast({
+        title: "Price Updated",
+        description: `Price automatically set to $${extractedPrice} from the link`,
+      });
+    }
   };
 
   return (

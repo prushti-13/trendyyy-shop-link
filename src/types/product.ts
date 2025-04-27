@@ -12,5 +12,6 @@ export interface Product {
     title: string;
     description?: string;
     lastModified: string;
+    extractedPrice?: number;
   };
 }
