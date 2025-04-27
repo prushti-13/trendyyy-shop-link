@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -30,7 +29,10 @@ const Navbar: React.FC<NavbarProps> = ({ isAdmin = false }) => {
             <Link to="/products" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Shop</Link>
             <Link to="/categories" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Categories</Link>
             {isAdmin && (
-              <Link to="/admin" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Admin</Link>
+              <>
+                <Link to="/admin" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Admin</Link>
+                <Link to="/admin/analytics" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Analytics</Link>
+              </>
             )}
           </nav>
           
@@ -60,7 +62,6 @@ const Navbar: React.FC<NavbarProps> = ({ isAdmin = false }) => {
         </div>
       </div>
       
-      {/* Mobile menu */}
       <div 
         className={cn(
           "md:hidden absolute top-16 inset-x-0 bg-white shadow-md transition-all duration-300 ease-in-out z-50",
@@ -101,13 +102,22 @@ const Navbar: React.FC<NavbarProps> = ({ isAdmin = false }) => {
               Categories
             </Link>
             {isAdmin && (
-              <Link 
-                to="/admin" 
-                className="text-gray-600 py-2 hover:text-trendyyy-accent transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Admin
-              </Link>
+              <>
+                <Link 
+                  to="/admin" 
+                  className="text-gray-600 py-2 hover:text-trendyyy-accent transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+                <Link 
+                  to="/admin/analytics" 
+                  className="text-gray-600 py-2 hover:text-trendyyy-accent transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Analytics
+                </Link>
+              </>
             )}
             <div className="flex items-center py-2">
               <ShoppingCart className="h-5 w-5 mr-2 text-gray-600" />
