@@ -8,4 +8,9 @@ export interface Product {
   image: string;
   purchaseLink: string;
   popularity: number;
+  linkMetadata?: {
+    title: string;
+    description?: string;
+    lastModified: string;
+  };
 }

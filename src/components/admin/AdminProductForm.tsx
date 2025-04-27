@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Product } from '@/types/product';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import LinkManager from './LinkManager';
 
 interface AdminProductFormProps {
   initialProduct?: Product;
@@ -65,6 +65,10 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({
       title: initialProduct ? "Product updated" : "Product created",
       description: `Successfully ${initialProduct ? 'updated' : 'added'} ${title}`,
     });
+  };
+
+  const handlePurchaseLinkUpdate = (newLink: string) => {
+    setPurchaseLink(newLink);
   };
 
   return (
@@ -152,16 +156,12 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="purchaseLink">Purchase Link</Label>
-        <Input
-          id="purchaseLink"
-          type="text"
-          value={purchaseLink}
-          onChange={(e) => setPurchaseLink(e.target.value)}
-          placeholder="https://example.com/buy-product"
-          className={errors.purchaseLink ? 'border-red-500' : ''}
+        <Label>Purchase Link Management</Label>
+        <LinkManager
+          productId={initialProduct?.id || ''}
+          currentLink={purchaseLink}
+          onUpdateLink={handlePurchaseLinkUpdate}
         />
-        {errors.purchaseLink && <p className="text-red-500 text-sm">{errors.purchaseLink}</p>}
       </div>
       
       <Button type="submit" className="bg-trendyyy-accent hover:bg-trendyyy-accent/90">
