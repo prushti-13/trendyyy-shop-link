@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAdmin } from '@/contexts/AdminContext';
 
 interface NavbarProps {
   isAdmin?: boolean;
@@ -11,6 +12,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ isAdmin = false }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { isAdmin: isAdminUser, toggleAdmin } = useAdmin();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -28,7 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAdmin = false }) => {
             <Link to="/" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Home</Link>
             <Link to="/products" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Shop</Link>
             <Link to="/categories" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Categories</Link>
-            {isAdmin && (
+            {isAdminUser && (
               <>
                 <Link to="/admin" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Admin</Link>
                 <Link to="/admin/analytics" className="text-gray-600 hover:text-trendyyy-accent transition-colors">Analytics</Link>
@@ -49,6 +51,15 @@ const Navbar: React.FC<NavbarProps> = ({ isAdmin = false }) => {
         </div>
         
         <div className="flex items-center space-x-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={toggleAdmin}
+            className="hidden md:flex"
+          >
+            <Shield className={cn("h-5 w-5", isAdminUser ? "text-trendyyy-accent" : "text-gray-500")} />
+          </Button>
+          
           <Button variant="ghost" size="icon" className="hidden md:flex">
             <ShoppingCart className="h-5 w-5" />
           </Button>
@@ -101,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAdmin = false }) => {
             >
               Categories
             </Link>
-            {isAdmin && (
+            {isAdminUser && (
               <>
                 <Link 
                   to="/admin" 
